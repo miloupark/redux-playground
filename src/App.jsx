@@ -1,47 +1,84 @@
-import { legacy_createStore } from "redux";
+import { combineReducers, legacy_createStore } from "redux";
 // import { counterReducer } from "./reducer";
 import "./App.css";
 import { useDispatch, useSelector } from "react-redux";
 
-// App.jsx 안에 액션 객체 직접 정의했었으나,
-const increment = {
-  type: "increment",
+// 액션 객체 (Action): 상태를 변경할 '의도'를 나타내는 객체
+const increment1 = {
+  type: "increment1",
 };
 
-const decrement = {
-  type: "decrement",
+const decrement1 = {
+  type: "decrement1",
 };
+
+const increment2 = {
+  type: "increment2",
+};
+
+const decrement2 = {
+  type: "decrement2",
+};
+// - type 프로퍼티는 필수, 추가 데이터도 작성할 수 있다
+// - 현재는 counter1, counter2 각각에 대해 + / - 정의
 // → action.js로 분리하고, 상수/함수로 관리
 
-// 액션 type에 따라 상태를 변경하는 함수
-const counterReducer = (state = 0, action) => {
+// 리듀서 (Reducer): 이전 state와 action을 받아 새로운 state를 반환하는 함수
+const counter1Reducer = (state = 0, action) => {
   switch (action.type) {
-    case "increment":
+    case "increment1":
       return state + 1;
-    case "decrement":
+    case "decrement1":
       return state - 1;
     default:
       return state;
   }
 };
+
+const counter2Reducer = (state = 0, action) => {
+  switch (action.type) {
+    case "increment2":
+      return state + 1;
+    case "decrement2":
+      return state - 1;
+    default:
+      return state;
+  }
+};
+// - combineReducers로 합쳐서 하나의 store에서 사용 가능
 // → reducer.js로 분리
 
-// 상태 저장소: legacy_createStore는 구버전 API (학습용으로 사용)
-// 실제 프로젝트에서는 Redux Toolkit의 configureStore 사용 권장
-export const store = legacy_createStore(counterReducer);
+// combineReducers: 여러 개의 리듀서를 하나로 합치는 Redux 유틸 함수
+const rootReducer = combineReducers({ counter1Reducer, counter2Reducer });
+
+// store: Redux의 상태 저장소
+export const store = legacy_createStore(rootReducer);
+// - Redux의 중앙 상태 저장소
+// - legacy_createStore는 구버전 API (학습용으로 사용)
+// - 실제 프로젝트에서는 Redux Toolkit의 configureStore 사용 권장
 // → store.js로 분리
 
-function App() {
-  const counter = useSelector((state) => state);
+// App
+export default function App() {
+  // useSelector: store의 state를 구독
+  const counter1 = useSelector((state) => state.counter1Reducer);
+  const counter2 = useSelector((state) => state.counter2Reducer);
+  // useDispatch: 액션을 store에 전달
   const dispatch = useDispatch();
 
   return (
     <>
-      <div>Counter: {counter}</div>
-      <button onClick={() => dispatch(increment)}>+</button>
-      <button onClick={() => dispatch(decrement)}>-</button>
+      <div>
+        <div>Counter: {counter1}</div>
+        <button onClick={() => dispatch(increment1)}>+</button>
+        <button onClick={() => dispatch(decrement1)}>-</button>
+      </div>
+      <div>
+        <div>Counter: {counter2}</div>
+        <button onClick={() => dispatch(increment2)}>+</button>
+        <button onClick={() => dispatch(decrement2)}>-</button>
+      </div>
     </>
   );
 }
-
-export default App;
+// - 각각 counter1, counter2 상태를 구독하고 버튼 클릭 시 액션 dispatch
