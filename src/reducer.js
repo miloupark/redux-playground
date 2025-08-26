@@ -1,5 +1,5 @@
 // 상태와 액션에 따라 새로운 상태를 반환하는 함수
-const counterReducer = (state = 0, action) => {
+export const counterReducer = (state = 0, action) => {
   // 카운터 초기값 0
   switch (
     action.type // action.type에 따라 분기 처리
