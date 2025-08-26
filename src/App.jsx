@@ -1,7 +1,8 @@
-import { combineReducers, legacy_createStore } from "redux";
+import { applyMiddleware, combineReducers, legacy_createStore } from "redux";
 // import { counterReducer } from "./reducer";
 import "./App.css";
 import { useDispatch, useSelector } from "react-redux";
+import { thunk } from "redux-thunk";
 
 // 액션 객체 (Action): 상태를 변경할 '의도'를 나타내는 객체
 const increment1 = {
@@ -51,12 +52,17 @@ const counter2Reducer = (state = 0, action) => {
 // combineReducers: 여러 개의 리듀서를 하나로 합치는 Redux 유틸 함수
 const rootReducer = combineReducers({ counter1Reducer, counter2Reducer });
 
-// store: Redux의 상태 저장소
-export const store = legacy_createStore(rootReducer);
-// - Redux의 중앙 상태 저장소
-// - legacy_createStore는 구버전 API (학습용으로 사용)
+// store
+export const store = legacy_createStore(rootReducer, applyMiddleware(thunk));
+// - Redux의 중앙 상태 저장소, legacy_createStore는 구버전 API (학습용으로 사용)
 // - 실제 프로젝트에서는 Redux Toolkit의 configureStore 사용 권장
 // → store.js로 분리
+
+// redux-thunk
+// - 원래 dispatch는 객체만 받을 수 있다, thunk 미들웨어를 추가하면 dispatch에 함수도 전달할 수 있다.
+// - dispatch에 함수가 전달되면, 미들웨어가 이 함수를 실행하면서 인자로 dispatch, getState를 넘겨준다.
+// - 따라서 함수 안에서 비동기 로직을 수행한 뒤, 필요할 때 dispatch를 호출해 상태를 변경할 수 있다.
+// - 실무에서는 보통 이 안에서 fetch/axios 같은 API 호출을 수행하고, 성공/실패 결과에 따라 dispatch를 실행한다고 한다.
 
 // App
 export default function App() {
@@ -70,8 +76,29 @@ export default function App() {
     <>
       <div>
         <div>Counter: {counter1}</div>
-        <button onClick={() => dispatch(increment1)}>+</button>
-        <button onClick={() => dispatch(decrement1)}>-</button>
+        {/* 버튼 클릭 시 1초 뒤에 액션을 dispatch */}
+        <button
+          onClick={() =>
+            dispatch((dispatch) => {
+              setTimeout(() => {
+                dispatch(increment1); // 1초 후에 증가 액션 실행
+              }, 1000);
+            })
+          }
+        >
+          +
+        </button>
+        <button
+          onClick={() =>
+            dispatch((dispatch) => {
+              setTimeout(() => {
+                dispatch(decrement1); // 1초 후에 감소 액션 실행
+              }, 1000);
+            })
+          }
+        >
+          -
+        </button>
       </div>
       <div>
         <div>Counter: {counter2}</div>
