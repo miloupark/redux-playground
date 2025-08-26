@@ -1,4 +1,8 @@
-import { configureStore, createSlice } from "@reduxjs/toolkit";
+import {
+  configureStore,
+  createAsyncThunk,
+  createSlice,
+} from "@reduxjs/toolkit";
 import "./App.css";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -20,7 +24,27 @@ const counterSlice = createSlice({
 // - initialState: 상태의 초기값
 // - reducers: 상태를 변경하는 함수 모음
 
-// store
+// 비동기 액션 (1초 지연 후 증가)
+const slowIncrementThunk = createAsyncThunk(
+  "counter/slowIncrement",
+  (value, { dispatch }) => {
+    setTimeout(() => {
+      dispatch(counterSlice.actions.increment());
+    }, 1000);
+  }
+);
+
+// 비동기 액션 (1초 지연 후 감소)
+const slowDecrementThunk = createAsyncThunk(
+  "counter/slowDecrement",
+  (value, { dispatch }) => {
+    setTimeout(() => {
+      dispatch(counterSlice.actions.decrement());
+    }, 1000);
+  }
+);
+
+// Redux store 생성 및 slice 등록
 export const store = configureStore({
   reducer: {
     counter: counterSlice.reducer,
@@ -28,12 +52,13 @@ export const store = configureStore({
 });
 
 export default function App() {
-  const counter = useSelector((state) => state.counter);
-  const dispatch = useDispatch();
+  const counter = useSelector((state) => state.counter); // 상태 구독
+  const dispatch = useDispatch(); // dispatch 함수 가져오기
 
   return (
     <>
       <div>Counter : {counter}</div>
+      {/* 동기 액션 */}
       <button
         onClick={() => {
           dispatch(counterSlice.actions.increment());
@@ -47,6 +72,22 @@ export default function App() {
         }}
       >
         -
+      </button>
+
+      {/* 비동기 액션 */}
+      <button
+        onClick={() => {
+          dispatch(slowIncrementThunk());
+        }}
+      >
+        Slow +
+      </button>
+      <button
+        onClick={() => {
+          dispatch(slowDecrementThunk());
+        }}
+      >
+        Slow -
       </button>
     </>
   );
