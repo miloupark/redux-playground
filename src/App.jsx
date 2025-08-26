@@ -1,3 +1,5 @@
+import { legacy_createStore } from "redux";
+import { counterReducer } from "./reducer";
 import "./App.css";
 
 // App.jsx 안에 액션 객체 직접 정의했었으나,
@@ -22,6 +24,10 @@ import "./App.css";
 //   }
 // };
 // → reducer.js로 분리
+
+// 상태 저장소: legacy_createStore는 구버전 API (학습용으로 사용)
+// 실제 프로젝트에서는 Redux Toolkit의 configureStore 사용 권장
+const store = legacy_createStore(counterReducer);
 
 function App() {
   return (
