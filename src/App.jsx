@@ -1,5 +1,6 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { configureStore, createSlice } from "@reduxjs/toolkit";
 import "./App.css";
+import { useDispatch, useSelector } from "react-redux";
 
 // counter 상태를 관리하는 slice 생성
 const counterSlice = createSlice({
@@ -19,12 +20,34 @@ const counterSlice = createSlice({
 // - initialState: 상태의 초기값
 // - reducers: 상태를 변경하는 함수 모음
 
+// store
+export const store = configureStore({
+  reducer: {
+    counter: counterSlice.reducer,
+  },
+});
+
 export default function App() {
+  const counter = useSelector((state) => state.counter);
+  const dispatch = useDispatch();
+
   return (
     <>
-      <div>Counter : 0</div>
-      <button>+</button>
-      <button>-</button>
+      <div>Counter : {counter}</div>
+      <button
+        onClick={() => {
+          dispatch(counterSlice.actions.increment());
+        }}
+      >
+        +
+      </button>
+      <button
+        onClick={() => {
+          dispatch(counterSlice.actions.decrement());
+        }}
+      >
+        -
+      </button>
     </>
   );
 }
