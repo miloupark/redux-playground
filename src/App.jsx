@@ -27,7 +27,8 @@ import "./App.css";
 
 // 상태 저장소: legacy_createStore는 구버전 API (학습용으로 사용)
 // 실제 프로젝트에서는 Redux Toolkit의 configureStore 사용 권장
-const store = legacy_createStore(counterReducer);
+// const store = legacy_createStore(counterReducer);
+// → store.js로 분리
 
 function App() {
   return (
