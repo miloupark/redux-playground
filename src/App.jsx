@@ -1,6 +1,7 @@
 import { legacy_createStore } from "redux";
 // import { counterReducer } from "./reducer";
 import "./App.css";
+import { useSelector } from "react-redux";
 
 // App.jsx 안에 액션 객체 직접 정의했었으나,
 const increment = {
@@ -31,9 +32,10 @@ export const store = legacy_createStore(counterReducer);
 // → store.js로 분리
 
 function App() {
+  const counter = useSelector((state) => state);
   return (
     <>
-      <div>Counter: 0</div>
+      <div>Counter: {counter}</div>
       <button>-</button>
       <button>+</button>
     </>
